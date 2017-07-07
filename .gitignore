@@ -1,0 +1,7 @@
+bin/
+bower_components/
+config/config.local.json
+composer.lock
+node_modules/
+vendor/
+web/assets/

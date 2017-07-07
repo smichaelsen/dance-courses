@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "autoprefixer": "^7.1.1",
+    "bower": "1.8.*",
+    "grunt": "^1",
+    "grunt-postcss": "^0.8.0"
+  }
+}

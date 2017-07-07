@@ -1,0 +1,16 @@
+{
+	"require": {
+		"smichaelsen/salad-bowl": "dev-master"
+	},
+	"config": {
+		"bin-dir": "bin",
+		"platform": {
+			"php": "7.1"
+		}
+	},
+	"autoload": {
+		"psr-4": {
+			"Smichaelsen\\Burzzi\\": "src/Classes/"
+		}
+	}
+}

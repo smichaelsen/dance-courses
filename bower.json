@@ -1,0 +1,6 @@
+{
+	"name": "burzzi",
+	"dependencies": {
+		"materialize": "*"
+	}
+}

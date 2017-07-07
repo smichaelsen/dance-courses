@@ -1,0 +1,11 @@
+{% extends 'layouts/global.twig' %}
+
+{% block content %}
+    <a href="{{ url('songs') }}">Songs</a>
+    <ul class="collection with-header">
+        <li class="collection-header"><h4>Letzte Kurse</h4></li>
+        {% for course in courses %}
+            <li class="collection-item">{{ course.name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

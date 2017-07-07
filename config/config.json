@@ -1,0 +1,15 @@
+{
+  "app": {
+  },
+  "database": {
+    "dbname": "",
+    "user": "",
+    "password": "",
+    "host": "127.0.0.1",
+    "driver": "pdo_mysql"
+  },
+  "routesClass": "\\Smichaelsen\\Burzzi\\Routes",
+  "twig": {
+    "templatesFolder": "templates/"
+  }
+}
