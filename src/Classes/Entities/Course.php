@@ -36,6 +36,14 @@ class Course
      */
     protected $participants;
 
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function getName(): string
     {
         return $this->name;

@@ -5,24 +5,17 @@
     <script type="text/javascript" src="{{ asset('js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/materialize.min.js') }}"></script>
     <link type="text/css" rel="stylesheet" href="{{ asset('css/materialize.min.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
 </head>
 <body>
 <nav class="light-blue lighten-1" role="navigation">
     <div class="nav-wrapper container">
         <a id="logo-container" href="{{ url('/') }}" class="brand-logo">Burzzi Dance Kursverwaltung</a>
-        <ul class="right hide-on-med-and-down">
-            <li><a href="#">Navbar Link</a></li>
-        </ul>
-
-        <ul id="nav-mobile" class="side-nav" style="transform: translateX(-100%);">
-            <li><a href="#">Navbar Link</a></li>
-        </ul>
-        <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
     </div>
 </nav>
 
 <div class="container">
-{% block content %}{{ content|raw }}{% endblock content %}
+    {% block content %}{{ content|raw }}{% endblock content %}
 </div>
 
 </body>
