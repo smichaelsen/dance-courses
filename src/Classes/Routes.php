@@ -4,7 +4,7 @@ namespace Smichaelsen\Burzzi;
 
 use Aura\Router\Map;
 use Smichaelsen\Burzzi\Controller\IndexController;
-use Smichaelsen\Burzzi\Controller\SongsController;
+use Smichaelsen\Burzzi\Controller\SongController;
 use Smichaelsen\SaladBowl\RoutesClassInterface;
 
 class Routes implements RoutesClassInterface
@@ -13,7 +13,10 @@ class Routes implements RoutesClassInterface
     public function configure(Map $map)
     {
         $map->get('index', '/', IndexController::class);
-        $map->get('songs', '/songs', SongsController::class);
+
+        $map->get('song', '/song/{action}/{id}', SongController::class);
+
+        $map->get('songs', '/songs', SongController::class);
     }
 
 }

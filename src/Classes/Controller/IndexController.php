@@ -4,6 +4,7 @@ namespace Smichaelsen\Burzzi\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Smichaelsen\Burzzi\Entities\Course;
+use Smichaelsen\Burzzi\Entities\Song;
 
 class IndexController extends AbstractController
 {
@@ -20,6 +21,12 @@ class IndexController extends AbstractController
             5
         );
         $this->view->assign('courses', $courses);
+        $songs = $this->entityManager->getRepository(Song::class)->findBy(
+            ['type' => 'choreo'],
+            ['artist' => 'ASC', 'title' => 'DESC'],
+            5
+        );
+        $this->view->assign('songs', $songs);
     }
 
 }

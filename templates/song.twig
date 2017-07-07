@@ -1,0 +1,7 @@
+{% extends 'layouts/global.twig' %}
+
+{% block content %}
+    {% if action == 'edit' %}
+        <h3>Lied {{ song.title }} bearbeiten</h3>
+    {% endif %}
+{% endblock content %}

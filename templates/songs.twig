@@ -1,8 +1,18 @@
 {% extends 'layouts/global.twig' %}
 
 {% block content %}
+    <h3>Choreos</h3>
     <ul class="songs collection">
-        {% for song in songs %}
+        {% for song in choreos %}
+            <li class="collection-item">
+                {{ song.artist }} - {{ song.title }}
+                <div class="chip teal lighten-3">{{ song.type }}</div>
+            </li>
+        {% endfor %}
+    </ul>
+    <h3>Warmups</h3>
+    <ul class="songs collection">
+        {% for song in warmups %}
             <li class="collection-item">
                 {{ song.artist }} - {{ song.title }}
                 <div class="chip teal lighten-3">{{ song.type }}</div>
