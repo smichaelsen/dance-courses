@@ -1,10 +1,13 @@
 <?php
+
 namespace Smichaelsen\Burzzi\Controller;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Smichaelsen\Burzzi\Entities\Course;
+use Smichaelsen\Burzzi\Entities\Participant;
 
 class CourseController extends AbstractController
 {
@@ -33,17 +36,46 @@ class CourseController extends AbstractController
         if ($action === 'submit') {
             /** @var Course $course */
             if ($courseData['id'] > 0) {
-                $course = $this->getcourseRepository()->findOneBy(['id' => (int)$courseData['id']]);
+                $course = $this->getcourseRepository()->findOneBy(['id' => (int) $courseData['id']]);
             } else {
                 $course = new course();
             }
             if (!empty($courseData['start_date'])) {
                 $course->setStartDateByString($courseData['start_date'], 'd.m.Y');
             }
+            if (!empty($courseData['participants_list'])) {
+                $participants = new ArrayCollection();
+                $participantNames = array_map('trim', explode("\n", $courseData['participants_list']));
+                foreach ($participantNames as $participantName) {
+                    $participant = $this->getParticipantRepository()->findOneBy([
+                        'name' => $participantName
+                    ]);
+                    if (!$participant instanceof Participant) {
+                        $participant = new Participant();
+                        $participant->setName($participantName);
+                    }
+                    $participant->getCourses()->add($course);
+                    $participants->add($participant);
+                }
+                $course->setParticipants($participants);
+            }
+            if (!empty($courseData['participants'])) {
+                $participants = new ArrayCollection();
+                foreach ($courseData['participants'] as $participantId) {
+                    $participant = $this->getParticipantRepository()->findOneBy([
+                        'id' => (int) $participantId
+                    ]);
+                    if ($participant instanceof Participant) {
+                        $participant->getCourses()->add($course);
+                        $participants->add($participant);
+                    }
+                }
+                $course->setParticipants($participants);
+            }
             $this->entityManager->persist($course);
         } elseif ($action === 'delete') {
             if ($courseData['id'] > 0 && !empty($courseData['confirmDelete'])) {
-                $course = $this->getcourseRepository()->findOneBy(['id' => (int)$courseData['id']]);
+                $course = $this->getcourseRepository()->findOneBy(['id' => (int) $courseData['id']]);
                 $this->entityManager->remove($course);
             }
         }
@@ -57,8 +89,11 @@ class CourseController extends AbstractController
 
     protected function editAction(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $course = $this->getCourseRepository()->findOneBy(['id' => (int)$request->getAttribute('id')]);
+        /** @var Course $course */
+        $course = $this->getCourseRepository()->findOneBy(['id' => (int) $request->getAttribute('id')]);
+        $participants = $this->getParticipantRepository()->findBy([], ['name' => 'ASC']);
         $this->view->assign('course', $course);
+        $this->view->assign('participants', $participants);
     }
 
     protected function listAction(ServerRequestInterface $request, ResponseInterface $response)
@@ -77,5 +112,14 @@ class CourseController extends AbstractController
             $courseRepository = $this->entityManager->getRepository(Course::class);
         }
         return $courseRepository;
+    }
+
+    protected function getParticipantRepository(): EntityRepository
+    {
+        static $participantRepository;
+        if (!$participantRepository instanceof EntityRepository) {
+            $participantRepository = $this->entityManager->getRepository(Participant::class);
+        }
+        return $participantRepository;
     }
 }

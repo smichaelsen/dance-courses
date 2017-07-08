@@ -21,7 +21,8 @@
                 </div>
                 <div class="input-field col s12">
                     {% if action == 'edit' %}
-                        lalla
+                        {% include 'components/form/select-multiple.twig' with
+                        {'icon': 'users', 'prefix': 'course', 'name': 'participants', 'values': "#{course.participants}", 'label': 'Teilnehmer', 'items': participants} %}
                     {% elseif action == 'create' %}
                         {% include 'components/form/textarea.twig' with
                         {'icon': 'users', 'prefix': 'course', 'name': 'participants_list', 'label': 'Teilnehmer (1 Name pro Zeile)'} %}

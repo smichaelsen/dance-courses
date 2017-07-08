@@ -2,6 +2,7 @@
 
 namespace Smichaelsen\Burzzi\Entities;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 /**
@@ -34,6 +35,9 @@ class Participant
      */
     public function getCourses()
     {
+        if (!$this->courses instanceof Collection) {
+            $this->courses = new ArrayCollection();
+        }
         return $this->courses;
     }
 
@@ -45,6 +49,14 @@ class Participant
         $this->courses = $courses;
     }
 
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -53,5 +65,10 @@ class Participant
     public function setName(string $name)
     {
         $this->name = $name;
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }
