@@ -1,0 +1,14 @@
+{% extends 'layouts/global.twig' %}
+
+{% block content %}
+    <h3>Kurse</h3>
+    <ul class="courses collection">
+        {% for course in courses %}
+            <li class="collection-item">
+                <a href="{{ url("course/edit/#{course.id}") }}">
+                    {{ course.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock content %}
