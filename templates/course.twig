@@ -1,0 +1,63 @@
+{% extends 'layouts/global.twig' %}
+
+{% block content %}
+    {% if action == 'edit' %}
+        <h3>Kurs bearbeiten</h3>
+    {% elseif action == 'create' %}
+        <h3>Neuer Kurs</h3>
+    {% endif %}
+    <div class="row">
+        <form class="col s12" method="post" action="{{ url('course/submit') }}">
+            <input type="hidden" name="course[id]" value="{{ course.id }}"/>
+            <div class="row">
+                <div class="input-field col s12">
+                    {% if action == 'edit' %}
+                        {% include 'components/form/date-input.twig' with
+                        {'icon': 'calendar', 'prefix': 'course', 'name': 'start_date', 'value': "#{course.startDate | date('d.m.Y')}", 'label': 'Startdatum'} %}
+                    {% elseif action == 'create' %}
+                        {% include 'components/form/date-input.twig' with
+                        {'icon': 'calendar', 'prefix': 'course', 'name': 'start_date', 'label': 'Startdatum'} %}
+                    {% endif %}
+                </div>
+                <div class="input-field col s12">
+                    {% if action == 'edit' %}
+                        lalla
+                    {% elseif action == 'create' %}
+                        {% include 'components/form/textarea.twig' with
+                        {'icon': 'users', 'prefix': 'course', 'name': 'participants_list', 'label': 'Teilnehmer (1 Name pro Zeile)'} %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="center-align">
+                <button type="submit" class="waves-effect waves-light btn light-blue">Speichern</button>
+                <a href="{{ url('courses') }}" class="waves-effect waves-light btn grey lighten-1">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+    {% if action == 'edit' %}
+        <hr/>
+        <h3>Kurs löschen</h3>
+        <div class="row">
+            <form class="col s12" method="post" action="{{ url('course/delete') }}">
+                <input type="hidden" name="course[id]" value="{{ course.id }}"/>
+                <div class="row">
+                    <div class="col s12 m6">
+                        <div class="switch">
+                            <label>
+                                Behalten
+                                <input type="checkbox" name="course[confirmDelete]">
+                                <span class="lever"></span>
+                                Löschen
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col s12 m6">
+                    </div>
+                </div>
+                <div class="center-align">
+                    <button type="submit" class="waves-effect waves-light btn red">Löschen</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+{% endblock content %}

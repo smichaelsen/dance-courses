@@ -2,6 +2,8 @@
 
 namespace Smichaelsen\Burzzi\Entities;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity @Table(name="course")
  */
@@ -12,13 +14,13 @@ class Course
      * @Id @Column(type="integer") @GeneratedValue
      * @var int
      */
-    protected $id;
+    protected $id = 0;
 
     /**
-     * @Column(type="string")
-     * @var string
+     * @Column(type="date")
+     * @var \DateTimeInterface
      */
-    protected $name;
+    protected $startDate;
 
     /**
      * @ManyToMany(targetEntity="Participant", inversedBy="courses")
@@ -32,7 +34,7 @@ class Course
      *  }
      * )
      *
-     * @var \Doctrine\Common\Collections\Collection|Participant[]
+     * @var Collection|Participant[]
      */
     protected $participants;
 
@@ -44,13 +46,34 @@ class Course
         return $this->id;
     }
 
-    public function getName(): string
+    /**
+     * @return \DateTimeInterface
+     */
+    public function getStartDate(): ?\DateTimeInterface
     {
-        return $this->name;
+        return $this->startDate;
     }
 
-    public function setName(string $name)
+    public function setStartDate(\DateTimeInterface $startDate)
     {
-        $this->name = $name;
+        $this->startDate = $startDate;
+    }
+
+    public function setStartDateByString(string $timestring, string $format)
+    {
+        $this->startDate = \DateTime::createFromFormat($format, $timestring);
+    }
+
+    /**
+     * @return Collection|Participant[]
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function setParticipants(Collection $participants)
+    {
+        $this->participants = $participants;
     }
 }

@@ -1,0 +1,82 @@
+stages:
+  - composer
+  - deploy
+
+composer:
+  stage: composer
+  image: webdevops/php:ubuntu-16.04
+  before_script:
+    - mkdir .Build
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=./ --filename=composer
+    - export COMPOSER_CACHE_DIR=/cache/composer
+  script:
+    - ./composer install --no-dev --prefer-dist --optimize-autoloader
+    # build
+    - mkdir web/assets
+    - cp -R bower_components/materialize/dist/ web/assets
+    - cp bower_components/jquery/dist/jquery.min.js web/assets/js
+    # copy
+    - cp -R config .Build/
+    - cp -R src .Build/
+    - cp -R templates .Build/
+    - cp -R web .Build/
+    - cp -R nginx.conf .Build/
+  artifacts:
+    # We grant 30 minutes here because the result has to survive the build stage and is used in the deploy stage
+    expire_in: 30 minutes
+    paths:
+      - .Build
+
+deploy:
+  stage: deploy
+  dependencies:
+    - composer
+  environment: $CI_BUILD_REF_NAME
+  image: webdevops/php:ubuntu-16.04
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  script:
+    - BRANCH=$CI_BUILD_REF_NAME
+    - SSH_HOST_VARIABLE=$BRANCH'_SSH_HOST'
+    - SSH_HOST="${!SSH_HOST_VARIABLE-`echo $SSH_HOST`}"
+    - if [ -z "$SSH_HOST" ]; then echo $BRANCH' is not deployed because there is no variable '$SSH_HOST' configured.' && exit 0; fi
+    - SSH_USERNAME_VARIABLE=$BRANCH'_SSH_USERNAME'
+    - SSH_USERNAME="${!SSH_USERNAME_VARIABLE-`echo $SSH_USERNAME`}"
+
+    - SSH_REMOTE_PATH_VARIABLE=$BRANCH'_SSH_REMOTE_PATH'
+    - SSH_REMOTE_PATH=${!SSH_REMOTE_PATH_VARIABLE-`echo $SSH_REMOTE_PATH`}
+
+    - if [ -f ./gitlab-ci-scripts/pre-deploy.sh ]; then cd .Build && ../gitlab-ci-scripts/pre-deploy.sh && cd -; fi
+
+    - >
+      rsync -az -e "ssh" --delete
+      --exclude=.htaccess.*
+      --exclude=.editorconfig
+      --exclude=composer.json
+      --exclude=composer.lock
+      --exclude=fileadmin
+      --exclude=download
+      --exclude=dynamicReturnTypeMeta.json
+      --exclude=typo3conf/l10n
+      --exclude=typo3conf/LFEditor
+      --exclude=.git
+      --exclude=.gitignore
+      --exclude=.gitlab-ci.yml
+      --exclude=*.md
+      --exclude=node_modules
+      --exclude=bower_components
+      --exclude=typo3temp
+      --exclude=.sass-cache
+      --exclude=uploads
+      --exclude=nginx.conf
+      .Build/ $SSH_USERNAME@$SSH_HOST:$SSH_REMOTE_PATH
+
+    # todo: migrate db
+    #- ssh $SSH_USERNAME@$SSH_HOST $TYPO3_CONSOLE' install:fixfolderstructure && '$TYPO3_CONSOLE' cache:flush && mkdir -p '$SSH_REMOTE_PATH'/backups/databases && '$TYPO3_CONSOLE' database:export | gzip > '$SSH_REMOTE_PATH'/backups/databases/beforedeploy.gz && '$TYPO3_CONSOLE' database:updateschema "*"'
+  artifacts:
+    expire_in: 60 minutes
+    paths:
+      - .Build

@@ -1,12 +1,15 @@
 {% extends 'layouts/global.twig' %}
 
 {% block content %}
-    <h3>Kurse</h3>
+    <h2>Kurse</h2>
+    <div class="right-align">
+        <a href="{{ url('course/create') }}" class="waves-effect waves-light btn green darken-1">Neuen Kurs anlegen</a>
+    </div>
     <ul class="courses collection">
         {% for course in courses %}
             <li class="collection-item">
                 <a href="{{ url("course/edit/#{course.id}") }}">
-                    {{ course.name }}
+                    {{ course.startDate | date("d.m.Y")}}
                 </a>
             </li>
         {% endfor %}

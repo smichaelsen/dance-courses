@@ -10,10 +10,7 @@
                     <ul class="collection">
                         {% for course in courses %}
                             <li class="collection-item">
-                                <a href="{{ url("course/edit/#{course.id}") }}">{{ course.name }}</a>
-                                <a href="{{ url("course/songs/#{course.id}") }}" class="secondary-content">
-                                    <i class="fa fa-music" aria-hidden="true"></i>
-                                </a>&nbsp;
+                                <a href="{{ url("course/edit/#{course.id}") }}">{{ course.startDate | date("d.m.Y")}}</a>
                             </li>
                         {% endfor %}
                     </ul>
@@ -28,7 +25,7 @@
             <div class="card blue-grey">
                 <div class="card-content white-text">
                     <span class="card-title"><i class="fa fa-music" aria-hidden="true"></i> Lieder</span>
-                    <p class="flow-text">Verwalte deine Burzzi Dance Songs.</p>
+                    <p>Verwalte deine Burzzi Dance Songs.</p>
                     <ul class="collection">
                         {% for song in songs %}
                             <li class="collection-item">
