@@ -15,25 +15,25 @@ class Song
      * @Id @Column(type="integer") @GeneratedValue
      * @var int
      */
-    protected $id;
+    protected $id = 0;
 
     /**
      * @Column(type="string")
      * @var string
      */
-    protected $artist;
+    protected $artist = '';
 
     /**
      * @Column(type="string")
      * @var string
      */
-    protected $title;
+    protected $title = '';
 
     /**
      * @Column(type="string")
      * @var string
      */
-    protected $type;
+    protected $type = '';
 
     /**
      * @return string

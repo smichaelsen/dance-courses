@@ -5,7 +5,9 @@
     <ul class="songs collection">
         {% for song in choreos %}
             <li class="collection-item">
-                {{ song.artist }} - {{ song.title }}
+                <a href="{{ url("song/edit/#{song.id}") }}">
+                    {{ song.artist }} - {{ song.title }}
+                </a>
                 <div class="chip teal lighten-3">{{ song.type }}</div>
             </li>
         {% endfor %}
@@ -14,7 +16,9 @@
     <ul class="songs collection">
         {% for song in warmups %}
             <li class="collection-item">
-                {{ song.artist }} - {{ song.title }}
+                <a href="{{ url("song/edit/#{song.id}") }}">
+                    {{ song.artist }} - {{ song.title }}
+                </a>
                 <div class="chip teal lighten-3">{{ song.type }}</div>
             </li>
         {% endfor %}

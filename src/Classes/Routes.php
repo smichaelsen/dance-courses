@@ -13,11 +13,9 @@ class Routes implements RoutesClassInterface
     public function configure(Map $map)
     {
         $map->get('index', '/', IndexController::class);
-
-        $map->get('song', '/song/{action}/{id}', SongController::class);
-
+        $map->get('song', '/song{/action,id}', SongController::class);
+        $map->post('submitSong', '/song/{action}', SongController::class);
         $map->get('songs', '/songs', SongController::class);
     }
 
 }
-

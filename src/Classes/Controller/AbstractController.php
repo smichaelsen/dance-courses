@@ -15,19 +15,23 @@ abstract class AbstractController extends \Smichaelsen\SaladBowl\AbstractControl
      */
     protected function registerTwigFunctions()
     {
-        $this->view->addFunction('asset', function ($path) {
-            $path = 'assets/' . trim($path, '/');
-            return '//' . $_SERVER['HTTP_HOST'] . '/' . trim($path, '/');
-        });
-        $this->view->addFunction('url', function ($path) {
-            $path = trim($path, '/') . '/';
-            $urlParts = ['//' . $_SERVER['HTTP_HOST']];
-            if (trim($path, '/')) {
-                $urlParts[] = trim($path, '/');
-            }
-            $url = join('/', $urlParts);
-            return $url;
-        });
+        static $isRegistered = false;
+        if (!$isRegistered) {
+            $this->view->addFunction('asset', function ($path) {
+                $path = 'assets/' . trim($path, '/');
+                return '//' . $_SERVER['HTTP_HOST'] . '/' . trim($path, '/');
+            });
+            $this->view->addFunction('url', function ($path) {
+                $path = trim($path, '/') . '/';
+                $urlParts = ['//' . $_SERVER['HTTP_HOST']];
+                if (trim($path, '/')) {
+                    $urlParts[] = trim($path, '/');
+                }
+                $url = join('/', $urlParts);
+                return $url;
+            });
+            $isRegistered = true;
+        }
     }
 
 }

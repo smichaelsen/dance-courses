@@ -2,6 +2,56 @@
 
 {% block content %}
     {% if action == 'edit' %}
-        <h3>Lied {{ song.title }} bearbeiten</h3>
+        <h3>Song bearbeiten</h3>
+    {% elseif action == 'create' %}
+        <h3>Neuer Song</h3>
+    {% endif %}
+    <div class="row">
+        <form class="col s12" method="post" action="{{ url('song/submit') }}">
+            <input type="hidden" name="song[id]" value="{{ song.id }}"/>
+            <div class="row">
+                <div class="input-field col s12 m6">
+                    {% include 'components/form/text-input.twig' with
+                    {'icon': 'user-circle', 'prefix': 'song', 'name': 'artist', 'value': "#{song.artist}", 'label': 'Künstler'} %}
+                </div>
+                <div class="input-field col s12 m6">
+                    {% include 'components/form/text-input.twig' with
+                    {'icon': 'microphone', 'prefix': 'song', 'name': 'title', 'value': "#{song.title}", 'label': 'Song'} %}
+                </div>
+                <div class="input-field col s12 m6">
+                    {% include 'components/form/select.twig' with
+                    {'icon': 'flag', 'prefix': 'song', 'name': 'type', 'value': "#{song.type}", 'label': 'Typ', 'items': ['choreo', 'warmup']} %}
+                </div>
+            </div>
+            <div class="center-align">
+                <button type="submit" class="waves-effect waves-light btn light-blue">Speichern</button>
+            </div>
+        </form>
+    </div>
+    {% if action == 'edit' %}
+        <hr/>
+        <h3>Song löschen</h3>
+        <div class="row">
+            <form class="col s12" method="post" action="{{ url('song/delete') }}">
+                <input type="hidden" name="song[id]" value="{{ song.id }}"/>
+                <div class="row">
+                    <div class="col s12 m6">
+                        <div class="switch">
+                            <label>
+                                Behalten
+                                <input type="checkbox" name="song[confirmDelete]">
+                                <span class="lever"></span>
+                                Löschen
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col s12 m6">
+                    </div>
+                </div>
+                <div class="center-align">
+                    <button type="submit" class="waves-effect waves-light btn red">Löschen</button>
+                </div>
+            </form>
+        </div>
     {% endif %}
 {% endblock content %}

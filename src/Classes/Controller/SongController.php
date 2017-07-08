@@ -14,6 +14,9 @@ class SongController extends AbstractController
         $action = $request->getAttribute('action') ?? 'list';
         $this->view->assign('action', $action);
         switch ($action) {
+            case 'create':
+                $this->createAction($request, $response);
+                break;
             case 'edit':
                 $this->editAction($request, $response);
                 break;
@@ -21,6 +24,47 @@ class SongController extends AbstractController
                 $this->listAction($request, $response);
                 break;
         }
+    }
+
+    public function post(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $action = $request->getAttribute('action') ?? 'submit';
+        $songData = $parameters = $request->getParsedBody()['song'];
+        if ($action === 'submit') {
+            /** @var Song $song */
+            if ($songData['id'] > 0) {
+                $song = $this->getSongRepository()->findOneBy(['id' => (int)$songData['id']]);
+            } else {
+                $song = new Song();
+            }
+            if (!empty($songData['artist'])) {
+                $song->setTitle($songData['artist']);
+            }
+            if (!empty($songData['title'])) {
+                $song->setTitle($songData['title']);
+            }
+            if (!empty($songData['type'])) {
+                $song->setType($songData['type']);
+            }
+            $this->entityManager->persist($song);
+        } elseif ($action === 'delete') {
+            if ($songData['id'] > 0 && !empty($songData['confirmDelete'])) {
+                $song = $this->getSongRepository()->findOneBy(['id' => (int)$songData['id']]);
+                $this->entityManager->remove($song);
+            }
+        }
+        $this->redirect('/songs');
+    }
+
+    protected function createAction(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $this->view->assign('song', new Song());
+    }
+
+    protected function editAction(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $song = $this->getSongRepository()->findOneBy(['id' => (int)$request->getAttribute('id')]);
+        $this->view->assign('song', $song);
     }
 
     protected function listAction(ServerRequestInterface $request, ResponseInterface $response)
@@ -35,12 +79,6 @@ class SongController extends AbstractController
         );
         $this->view->assign('choreos', $choreos);
         $this->view->assign('warmups', $warmups);
-    }
-
-    protected function editAction(ServerRequestInterface $request, ResponseInterface $response)
-    {
-        $song = $this->getSongRepository()->findOneBy(['id' => (int)$request->getAttribute('id')]);
-        $this->view->assign('song', $song);
     }
 
     protected function getSongRepository(): EntityRepository

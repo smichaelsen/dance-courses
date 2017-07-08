@@ -1,0 +1,7 @@
+<i class="fa fa-{{ icon }} prefix" aria-hidden="true"></i>
+<select id="input_{{ name }}" name="{{ prefix }}[{{ name }}]">
+    {% for item in items %}
+        <option value="{{ item }}"{% if item == value %} selected{% endif %}>{{ item }}</option>
+    {% endfor %}
+</select>
+<label for="input_{{ name }}">{{ label }}</label>
