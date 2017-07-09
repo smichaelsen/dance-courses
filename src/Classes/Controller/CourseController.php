@@ -136,6 +136,9 @@ class CourseController extends AbstractController
         $previousCoursesCriteria->where(Criteria::expr()->lt('id', $course->getId()));
         $previousCourses = $this->getCourseRepository()->matching($previousCoursesCriteria);
 
+        /**
+         * Recommended Choreos
+         */
         $choreos = $this->getSongRepository()->findBy(
             ['type' => 'choreo'],
             ['artist' => 'ASC', 'title' => 'DESC']
@@ -144,7 +147,7 @@ class CourseController extends AbstractController
             $choreos,
             $course->getParticipants(),
             $previousCourses,
-            'choreo'
+            Song::TYPE_CHOREO
         );
         foreach ($choreoOptions as $key => $choreoOption) {
             $choreoOption['selected'] = $course->getChoreos()->contains($choreoOption['entity']);
@@ -155,17 +158,25 @@ class CourseController extends AbstractController
         }
         $this->view->assign('choreoOptions', $choreoOptions);
 
+        /**
+         * Recommended Warmups
+         */
         $warmups = $this->getSongRepository()->findBy(
             ['type' => 'warmup'],
             ['artist' => 'ASC', 'title' => 'DESC']
         );
-        $warmupOptions = [];
-        foreach ($warmups as $warmup) {
-            $option = [
-                'entity' => $warmup,
-                'selected' => $course->getWarmups()->contains($warmup),
-            ];
-            $warmupOptions[] = $option;
+        $warmupOptions = $songRecommendationService->sortByLowestPreviousOccurrence(
+            $warmups,
+            $course->getParticipants(),
+            $previousCourses,
+            Song::TYPE_WARMUP
+        );
+        foreach ($warmupOptions as $key => $warmupOption) {
+            $warmupOption['selected'] = $course->getWarmups()->contains($warmupOption['entity']);
+            if (count($warmupOption['occurredForParticipants'])) {
+                $warmupOption['description'] = count($warmupOption['occurredForParticipants']) . ' Teilnehmer hatten diesen Song schon: ' . join(', ', $warmupOption['occurredForParticipants']->toArray());
+            }
+            $warmupOptions[$key] = $warmupOption;
         }
         $this->view->assign('warmupOptions', $warmupOptions);
     }
