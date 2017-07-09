@@ -10,7 +10,9 @@
                     <ul class="collection">
                         {% for course in courses %}
                             <li class="collection-item">
-                                <a href="{{ url("course/edit/#{course.id}") }}">{{ course.startDate | date("d.m.Y")}}</a>
+                                <a href="{{ url("course/edit/#{course.id}") }}">
+                                    {{ course.startDate | date("d.m.Y")}} ({{ course.participants | length }} Teilnehmer)
+                                </a>
                             </li>
                         {% endfor %}
                     </ul>

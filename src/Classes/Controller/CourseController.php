@@ -64,6 +64,9 @@ class CourseController extends AbstractController
             if (!empty($courseData['new_participants_list'])) {
                 $participantNames = array_map('trim', explode("\n", $courseData['new_participants_list']));
                 foreach ($participantNames as $participantName) {
+                    if (empty($participantName)) {
+                        continue;
+                    }
                     $participant = $this->getParticipantRepository()->findOneBy([
                         'name' => $participantName
                     ]);
@@ -146,7 +149,7 @@ class CourseController extends AbstractController
         foreach ($choreoOptions as $key => $choreoOption) {
             $choreoOption['selected'] = $course->getChoreos()->contains($choreoOption['entity']);
             if (count($choreoOption['occurredForParticipants'])) {
-                $choreoOption['description'] = count($choreoOption['occurredForParticipants']) . ' Teilnehmer hatten diesen Song schon: ' . join(', ', $choreoOption['occurredForParticipants']);
+                $choreoOption['description'] = count($choreoOption['occurredForParticipants']) . ' Teilnehmer hatten diesen Song schon: ' . join(', ', $choreoOption['occurredForParticipants']->toArray());
             }
             $choreoOptions[$key] = $choreoOption;
         }

@@ -2,7 +2,6 @@ bin/
 bower_components/
 castlerush/
 config/config.local.json
-composer.lock
 node_modules/
 vendor/
 web/assets/

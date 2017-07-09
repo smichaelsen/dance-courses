@@ -1,6 +1,7 @@
 <?php
 namespace Smichaelsen\Burzzi\Service;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Smichaelsen\Burzzi\Entities\Course;
 use Smichaelsen\Burzzi\Entities\Participant;
@@ -24,7 +25,7 @@ class SongRecommendationService
         $remainingSongs = $songs;
         while (count($songCollection) < count($songs)) {
             foreach ($remainingSongs as $key => $song) {
-                $occurredForParticipants = [];
+                $occurredForParticipants = new ArrayCollection();
                 foreach ($previousCourses as $previousCourse) {
                     if ($type === Song::TYPE_WARMUP) {
                         $courseContainsSong = $previousCourse->getWarmups()->contains($song);
@@ -35,8 +36,8 @@ class SongRecommendationService
                     }
                     if ($courseContainsSong) {
                         foreach ($participants as $participant) {
-                            if ($previousCourse->getParticipants()->contains($participant)) {
-                                $occurredForParticipants[] = $participant;
+                            if ($previousCourse->getParticipants()->contains($participant) && !$occurredForParticipants->contains($participant)) {
+                                $occurredForParticipants->add($participant);
                             }
                         }
                     }
