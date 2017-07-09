@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Smichaelsen\Burzzi\Entities\Course;
 use Smichaelsen\Burzzi\Entities\Participant;
+use Smichaelsen\Burzzi\Entities\Song;
 
 class CourseController extends AbstractController
 {
@@ -43,9 +44,9 @@ class CourseController extends AbstractController
             if (!empty($courseData['start_date'])) {
                 $course->setStartDateByString($courseData['start_date'], 'd.m.Y');
             }
-            if (!empty($courseData['participants_list'])) {
-                $participants = new ArrayCollection();
-                $participantNames = array_map('trim', explode("\n", $courseData['participants_list']));
+            $participants = new ArrayCollection();
+            if (!empty($courseData['new_participants_list'])) {
+                $participantNames = array_map('trim', explode("\n", $courseData['new_participants_list']));
                 foreach ($participantNames as $participantName) {
                     $participant = $this->getParticipantRepository()->findOneBy([
                         'name' => $participantName
@@ -57,10 +58,8 @@ class CourseController extends AbstractController
                     $participant->getCourses()->add($course);
                     $participants->add($participant);
                 }
-                $course->setParticipants($participants);
             }
             if (!empty($courseData['participants'])) {
-                $participants = new ArrayCollection();
                 foreach ($courseData['participants'] as $participantId) {
                     $participant = $this->getParticipantRepository()->findOneBy([
                         'id' => (int) $participantId
@@ -70,8 +69,8 @@ class CourseController extends AbstractController
                         $participants->add($participant);
                     }
                 }
-                $course->setParticipants($participants);
             }
+            $course->setParticipants($participants);
             $this->entityManager->persist($course);
         } elseif ($action === 'delete') {
             if ($courseData['id'] > 0 && !empty($courseData['confirmDelete'])) {
@@ -85,12 +84,23 @@ class CourseController extends AbstractController
     protected function createAction(ServerRequestInterface $request, ResponseInterface $response)
     {
         $this->view->assign('course', new Course());
+        $participants = $this->getParticipantRepository()->findBy([], ['name' => 'ASC']);
+        $participantOptions = [];
+        foreach ($participants as $participant) {
+            $option = [
+                'entity' => $participant,
+            ];
+            $participantOptions[] = $option;
+        }
+        $this->view->assign('participantOptions', $participantOptions);
     }
 
     protected function editAction(ServerRequestInterface $request, ResponseInterface $response)
     {
         /** @var Course $course */
         $course = $this->getCourseRepository()->findOneBy(['id' => (int) $request->getAttribute('id')]);
+        $this->view->assign('course', $course);
+
         $participants = $this->getParticipantRepository()->findBy([], ['name' => 'ASC']);
         $participantOptions = [];
         foreach ($participants as $participant) {
@@ -100,8 +110,37 @@ class CourseController extends AbstractController
             ];
             $participantOptions[] = $option;
         }
-        $this->view->assign('course', $course);
         $this->view->assign('participantOptions', $participantOptions);
+
+        $choreos = $this->getSongRepository()->findBy(
+            ['type' => 'choreo'],
+            ['artist' => 'ASC', 'title' => 'DESC']
+        );
+        $choreoOptions = [];
+        foreach ($choreos as $choreo) {
+            $option = [
+                'entity' => $choreo,
+                'selected' => false,
+                'description' => 'foo',
+            ];
+            $choreoOptions[] = $option;
+        }
+        $this->view->assign('choreoOptions', $choreoOptions);
+
+        $warmups = $this->getSongRepository()->findBy(
+            ['type' => 'warmup'],
+            ['artist' => 'ASC', 'title' => 'DESC']
+        );
+        $warmupOptions = [];
+        foreach ($warmups as $warmup) {
+            $option = [
+                'entity' => $warmup,
+                'selected' => false,
+                'description' => 'foo',
+            ];
+            $warmupOptions[] = $option;
+        }
+        $this->view->assign('warmupOptions', $warmupOptions);
     }
 
     protected function listAction(ServerRequestInterface $request, ResponseInterface $response)
@@ -129,5 +168,14 @@ class CourseController extends AbstractController
             $participantRepository = $this->entityManager->getRepository(Participant::class);
         }
         return $participantRepository;
+    }
+
+    protected function getSongRepository(): EntityRepository
+    {
+        static $songRepository;
+        if (!$songRepository instanceof EntityRepository) {
+            $songRepository = $this->entityManager->getRepository(Song::class);
+        }
+        return $songRepository;
     }
 }

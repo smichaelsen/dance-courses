@@ -20,14 +20,23 @@
                     {% endif %}
                 </div>
                 <div class="input-field col s12">
-                    {% if action == 'edit' %}
-                        {% include 'components/form/select-multiple.twig' with
-                        {'icon': 'users', 'prefix': 'course', 'name': 'participants', 'label': 'Teilnehmer', 'entityOptions': participantOptions} %}
-                    {% elseif action == 'create' %}
-                        {% include 'components/form/textarea.twig' with
-                        {'icon': 'users', 'prefix': 'course', 'name': 'participants_list', 'label': 'Teilnehmer (1 Name pro Zeile)'} %}
-                    {% endif %}
+                    {% include 'components/form/select-multiple.twig' with
+                    {'icon': 'users', 'prefix': 'course', 'name': 'participants', 'label': 'Teilnehmer', 'entityOptions': participantOptions} %}
                 </div>
+                <div class="input-field col s12">
+                    {% include 'components/form/textarea.twig' with
+                    {'icon': 'user-plus', 'prefix': 'course', 'name': 'new_participants_list', 'label': 'Neue Teilnehmer (1 Name pro Zeile)'} %}
+                </div>
+                {% if action == 'edit' %}
+                    <div class="input-field col s12">
+                        {% include 'components/form/checkboxes.twig' with
+                        {'icon': 'heartbeat', 'prefix': 'course', 'name': 'warmup', 'label': 'Warmup', 'entityOptions': warmupOptions} %}
+                    </div>
+                    <div class="input-field col s12">
+                        {% include 'components/form/checkboxes.twig' with
+                        {'icon': 'star', 'prefix': 'course', 'name': 'choreos', 'label': 'Choreos', 'entityOptions': choreoOptions} %}
+                    </div>
+                {% endif %}
             </div>
             <div class="center-align">
                 <button type="submit" class="waves-effect waves-light btn light-blue">Speichern</button>

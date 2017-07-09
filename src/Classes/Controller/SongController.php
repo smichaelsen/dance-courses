@@ -38,7 +38,7 @@ class SongController extends AbstractController
                 $song = new Song();
             }
             if (!empty($songData['artist'])) {
-                $song->setTitle($songData['artist']);
+                $song->setArtist($songData['artist']);
             }
             if (!empty($songData['title'])) {
                 $song->setTitle($songData['title']);

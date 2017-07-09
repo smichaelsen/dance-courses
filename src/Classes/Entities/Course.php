@@ -10,6 +10,23 @@ use Doctrine\Common\Collections\Collection;
 class Course
 {
 
+
+    /**
+     * @ManyToMany(targetEntity="Song", cascade={"persist"})
+     * @JoinTable(
+     *  name="course_choreo_mm",
+     *  joinColumns={
+     *      @JoinColumn(name="course_id", referencedColumnName="id")
+     *  },
+     *  inverseJoinColumns={
+     *      @JoinColumn(name="song_id", referencedColumnName="id")
+     *  }
+     * )
+     *
+     * @var Collection|Song[]
+     */
+    protected $choreos;
+
     /**
      * @Id @Column(type="integer") @GeneratedValue
      * @var int
@@ -37,6 +54,54 @@ class Course
      * @var Collection|Participant[]
      */
     protected $participants;
+
+    /**
+     * @ManyToMany(targetEntity="Song", cascade={"persist"})
+     * @JoinTable(
+     *  name="course_warmup_mm",
+     *  joinColumns={
+     *      @JoinColumn(name="course_id", referencedColumnName="id")
+     *  },
+     *  inverseJoinColumns={
+     *      @JoinColumn(name="song_id", referencedColumnName="id")
+     *  }
+     * )
+     *
+     * @var Collection|Song[]
+     */
+    protected $warmups;
+
+    /**
+     * @return mixed
+     */
+    public function getChoreos()
+    {
+        return $this->choreos;
+    }
+
+    /**
+     * @param mixed $choreos
+     */
+    public function setChoreos($choreos)
+    {
+        $this->choreos = $choreos;
+    }
+
+    /**
+     * @return Collection|Song[]
+     */
+    public function getWarmups()
+    {
+        return $this->warmups;
+    }
+
+    /**
+     * @param Collection|Song[] $warmups
+     */
+    public function setWarmups($warmups)
+    {
+        $this->warmups = $warmups;
+    }
 
     /**
      * @return int

@@ -1,0 +1,15 @@
+<h4><i class="fa fa-{{ icon }}" aria-hidden="true"></i> {{ label }}</h4>
+
+{% if entityOptions %}
+    {% for entityOption in entityOptions %}
+        <p>
+            <input type="checkbox"{% if entityOption.selected %} checked{% endif %} id="checkbox_{{ name }}_{{ entityOption.entity.id }}" value="{{ entityOption.entity.id }}"/>
+            <label for="checkbox_{{ name }}_{{ entityOption.entity.id }}">
+                {{ entityOption.entity }}
+                {% if entityOption.description %}
+                    <i>({{ entityOption.description }})</i>
+                {% endif %}
+            </label>
+        </p>
+    {% endfor %}
+{% endif %}

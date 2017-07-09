@@ -93,4 +93,9 @@ class Song
         }
         $this->type = $type;
     }
+
+    public function __toString()
+    {
+        return $this->getArtist() . ' - ' . $this->getTitle();
+    }
 }
