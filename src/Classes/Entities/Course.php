@@ -2,6 +2,7 @@
 
 namespace Smichaelsen\Burzzi\Entities;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 /**
@@ -72,15 +73,18 @@ class Course
     protected $warmups;
 
     /**
-     * @return mixed
+     * @return Collection|Song[]
      */
     public function getChoreos()
     {
+        if (!$this->choreos instanceof Collection) {
+            $this->choreos = new ArrayCollection();
+        }
         return $this->choreos;
     }
 
     /**
-     * @param mixed $choreos
+     * @param Collection $choreos
      */
     public function setChoreos($choreos)
     {
@@ -92,6 +96,9 @@ class Course
      */
     public function getWarmups()
     {
+        if (!$this->warmups instanceof Collection) {
+            $this->warmups = new ArrayCollection();
+        }
         return $this->warmups;
     }
 
@@ -114,9 +121,9 @@ class Course
     /**
      * @return \DateTimeInterface
      */
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): \DateTimeInterface
     {
-        return $this->startDate;
+        return $this->startDate ?? new \DateTime();
     }
 
     public function setStartDate(\DateTimeInterface $startDate)

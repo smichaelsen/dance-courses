@@ -3,12 +3,14 @@
 namespace Smichaelsen\Burzzi\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Smichaelsen\Burzzi\Entities\Course;
 use Smichaelsen\Burzzi\Entities\Participant;
 use Smichaelsen\Burzzi\Entities\Song;
+use Smichaelsen\Burzzi\Service\SongRecommendationService;
 
 class CourseController extends AbstractController
 {
@@ -37,12 +39,26 @@ class CourseController extends AbstractController
         if ($action === 'submit') {
             /** @var Course $course */
             if ($courseData['id'] > 0) {
-                $course = $this->getcourseRepository()->findOneBy(['id' => (int) $courseData['id']]);
+                $course = $this->getCourseRepository()->findOneBy(['id' => (int) $courseData['id']]);
             } else {
                 $course = new course();
             }
             if (!empty($courseData['start_date'])) {
                 $course->setStartDateByString($courseData['start_date'], 'd.m.Y');
+            }
+            $course->getChoreos()->clear();
+            if (!empty($courseData['choreos'])) {
+                $choreos = $this->getSongRepository()->findBy(['id' => array_map('intval', $courseData['choreos'])]);
+                foreach ($choreos as $choreo) {
+                    $course->getChoreos()->add($choreo);
+                }
+            }
+            $course->getWarmups()->clear();
+            if (!empty($courseData['warmups'])) {
+                $warmups = $this->getSongRepository()->findBy(['id' => array_map('intval', $courseData['warmups'])]);
+                foreach ($warmups as $warmup) {
+                    $course->getWarmups()->add($warmup);
+                }
             }
             $participants = new ArrayCollection();
             if (!empty($courseData['new_participants_list'])) {
@@ -112,18 +128,27 @@ class CourseController extends AbstractController
         }
         $this->view->assign('participantOptions', $participantOptions);
 
+        $songRecommendationService = new SongRecommendationService();
+        $previousCoursesCriteria = new Criteria();
+        $previousCoursesCriteria->where(Criteria::expr()->lt('id', $course->getId()));
+        $previousCourses = $this->getCourseRepository()->matching($previousCoursesCriteria);
+
         $choreos = $this->getSongRepository()->findBy(
             ['type' => 'choreo'],
             ['artist' => 'ASC', 'title' => 'DESC']
         );
-        $choreoOptions = [];
-        foreach ($choreos as $choreo) {
-            $option = [
-                'entity' => $choreo,
-                'selected' => false,
-                'description' => 'foo',
-            ];
-            $choreoOptions[] = $option;
+        $choreoOptions = $songRecommendationService->sortByLowestPreviousOccurrence(
+            $choreos,
+            $course->getParticipants(),
+            $previousCourses,
+            'choreo'
+        );
+        foreach ($choreoOptions as $key => $choreoOption) {
+            $choreoOption['selected'] = $course->getChoreos()->contains($choreoOption['entity']);
+            if (count($choreoOption['occurredForParticipants'])) {
+                $choreoOption['description'] = count($choreoOption['occurredForParticipants']) . ' Teilnehmer hatten diesen Song schon: ' . join(', ', $choreoOption['occurredForParticipants']);
+            }
+            $choreoOptions[$key] = $choreoOption;
         }
         $this->view->assign('choreoOptions', $choreoOptions);
 
@@ -135,8 +160,7 @@ class CourseController extends AbstractController
         foreach ($warmups as $warmup) {
             $option = [
                 'entity' => $warmup,
-                'selected' => false,
-                'description' => 'foo',
+                'selected' => $course->getWarmups()->contains($warmup),
             ];
             $warmupOptions[] = $option;
         }

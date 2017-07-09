@@ -10,21 +10,21 @@ class SongRecommendationService
 {
 
     /**
-     * @param Collection|Song[] $songs
+     * @param array|Song[] $songs
      * @param Collection|Participant[] $participants
      * @param Collection|Course[] $previousCourses
      * @param string $type
      * @return array
      * @throws \Exception
      */
-    public function sortByLowestPreviousOccurrence(Collection $songs, Collection $participants, Collection $previousCourses, string $type): array
+    public function sortByLowestPreviousOccurrence(array $songs, Collection $participants, Collection $previousCourses, string $type): array
     {
         $songCollection = [];
         $occurrenceThreshold = 0;
-        $remainingSongs = clone $songs;
+        $remainingSongs = $songs;
         while (count($songCollection) < count($songs)) {
-            foreach ($remainingSongs as $song) {
-                $occurrences = 0;
+            foreach ($remainingSongs as $key => $song) {
+                $occurredForParticipants = [];
                 foreach ($previousCourses as $previousCourse) {
                     if ($type === Song::TYPE_WARMUP) {
                         $courseContainsSong = $previousCourse->getWarmups()->contains($song);
@@ -36,17 +36,18 @@ class SongRecommendationService
                     if ($courseContainsSong) {
                         foreach ($participants as $participant) {
                             if ($previousCourse->getParticipants()->contains($participant)) {
-                                $occurrences++;
+                                $occurredForParticipants[] = $participant;
                             }
                         }
                     }
                 }
-                if ($occurrences <= $occurrenceThreshold) {
+                if (count($occurredForParticipants) <= $occurrenceThreshold) {
                     $collectionItem = [
                         'entity' => $song,
-                        'occurrences' => $occurrences
+                        'occurredForParticipants' => $occurredForParticipants
                     ];
                     $songCollection[] = $collectionItem;
+                    unset($remainingSongs[$key]);
                 }
             }
             $occurrenceThreshold++;
