@@ -1,7 +1,14 @@
 <i class="fa fa-{{ icon }} prefix" aria-hidden="true"></i>
 <select id="input_{{ name }}" name="{{ prefix }}[{{ name }}][]" multiple>
-    {% for item in items %}
-        <option value="{{ item.id }}">{{ item }}</option>
-    {% endfor %}
+    <option value="" disabled>Teilnehmer wählen</option>
+    {% if entityOptions %}
+        {% for entityOption in entityOptions %}
+            <option value="{{ entityOption.entity.id }}"{% if entityOption.selected %} selected{% endif %}>{{ entityOption.entity }}</option>
+        {% endfor %}
+    {% elseif items %}
+        {% for item in items %}
+            <option value="{{ item }}">{{ item }}</option>
+        {% endfor %}
+    {% endif %}
 </select>
 <label for="input_{{ name }}">{{ label }}</label>

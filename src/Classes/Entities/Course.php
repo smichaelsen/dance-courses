@@ -23,7 +23,7 @@ class Course
     protected $startDate;
 
     /**
-     * @ManyToMany(targetEntity="Participant", inversedBy="courses")
+     * @ManyToMany(targetEntity="Participant", inversedBy="courses", cascade={"persist"})
      * @JoinTable(
      *  name="course_participant_mm",
      *  joinColumns={

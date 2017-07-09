@@ -92,8 +92,16 @@ class CourseController extends AbstractController
         /** @var Course $course */
         $course = $this->getCourseRepository()->findOneBy(['id' => (int) $request->getAttribute('id')]);
         $participants = $this->getParticipantRepository()->findBy([], ['name' => 'ASC']);
+        $participantOptions = [];
+        foreach ($participants as $participant) {
+            $option = [
+                'entity' => $participant,
+                'selected' => $course->getParticipants()->contains($participant),
+            ];
+            $participantOptions[] = $option;
+        }
         $this->view->assign('course', $course);
-        $this->view->assign('participants', $participants);
+        $this->view->assign('participantOptions', $participantOptions);
     }
 
     protected function listAction(ServerRequestInterface $request, ResponseInterface $response)
