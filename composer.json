@@ -3,7 +3,6 @@
 		"smichaelsen/salad-bowl": "2.*"
 	},
 	"config": {
-		"bin-dir": "bin",
 		"platform": {
 			"php": "7.0"
 		}

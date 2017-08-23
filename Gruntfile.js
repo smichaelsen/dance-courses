@@ -1,7 +1,5 @@
 module.exports = function (grunt) {
 
-    var projectPath = '/var/www/projects/flowfwd/castlerush';
-
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         postcss: {
@@ -29,11 +27,7 @@ module.exports = function (grunt) {
             },
             dbschema: {
                 command: function (environment) {
-                    var command = 'php vendor/bin/doctrine orm:schema-tool:update --force';
-                    if (environment == 'vm') {
-                        return 'vagrant ssh -c "cd ' + projectPath + ' && ' + command + '"';
-                    }
-                    return command;
+                    return 'php vendor/bin/doctrine orm:schema-tool:update --force';
                 }
             }
         },

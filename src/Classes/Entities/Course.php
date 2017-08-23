@@ -35,12 +35,6 @@ class Course
     protected $id = 0;
 
     /**
-     * @Column(type="date")
-     * @var \DateTimeInterface
-     */
-    protected $startDate;
-
-    /**
      * @ManyToMany(targetEntity="Participant", inversedBy="courses", cascade={"persist"})
      * @JoinTable(
      *  name="course_participant_mm",
@@ -55,6 +49,18 @@ class Course
      * @var Collection|Participant[]
      */
     protected $participants;
+
+    /**
+     * @Column(type="date")
+     * @var \DateTimeInterface
+     */
+    protected $startDate;
+
+    /**
+     * @Column(type="float")
+     * @var float
+     */
+    protected $tuition;
 
     /**
      * @ManyToMany(targetEntity="Song", cascade={"persist"})
@@ -147,5 +153,21 @@ class Course
     public function setParticipants(Collection $participants)
     {
         $this->participants = $participants;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTuition(): float
+    {
+        return $this->tuition;
+    }
+
+    /**
+     * @param float $tuition
+     */
+    public function setTuition(float $tuition)
+    {
+        $this->tuition = $tuition;
     }
 }
